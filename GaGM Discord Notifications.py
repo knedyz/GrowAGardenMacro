@@ -5,6 +5,13 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import os
 import json
+import logging
+import shutil
+import sys
+
+# Suppress discord.py logging below WARNING level
+logging.basicConfig(level=logging.WARNING)
+logging.disable(logging.CRITICAL)
 
 with open('settings.json', 'r') as f:
     settings = json.load(f)
@@ -16,6 +23,30 @@ client = discord.Client(intents=intents)
 
 last_content = None
 
+# ASCII art for "Knedyz"
+KNEDYZ_ASCII = r"""
+░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░░▒▓████████▓▒░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░ 
+░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░ 
+░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░    ░▒▓██▓▒░  
+░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓██████▓▒░ ░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░   ░▒▓██▓▒░    
+░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░  ░▒▓█▓▒░    ░▒▓██▓▒░      
+░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░  ░▒▓█▓▒░   ░▒▓█▓▒░        
+░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓███████▓▒░   ░▒▓█▓▒░   ░▒▓████████▓▒░ 
+                                                                                
+                                                                                                                          
+"""
+
+RED = '\033[91m'
+RESET = '\033[0m'
+
+def clear_terminal():
+    # Clear terminal for Windows and Unix
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def print_centered(text):
+    terminal_width = shutil.get_terminal_size((80, 20)).columns
+    for line in text.splitlines():
+        print(line.center(terminal_width))
 
 class FileChangeHandler(FileSystemEventHandler):
     def __init__(self, loop):
@@ -31,7 +62,7 @@ class FileChangeHandler(FileSystemEventHandler):
         now = datetime.datetime.now().timestamp()
         if self.last_trigger_time is None or (now - self.last_trigger_time) > self.debounceSec:
             self.last_trigger_time = now
-            print(f"[{datetime.datetime.now()}] Detected file change: {event.src_path}")
+            print(f"You have completed a haul at: [{datetime.datetime.now()}]")
             self.loop.create_task(post_file_if_changed())
         else:
             print(f"[{datetime.datetime.now()}] Ignored duplicate event.")
@@ -63,14 +94,18 @@ async def post_file_if_changed():
 
 @client.event
 async def on_ready():
-    print(f'Bot is now running.')
+    clear_terminal()
+    print_centered(KNEDYZ_ASCII)
+    terminal_width = shutil.get_terminal_size((80, 20)).columns
+    notification_text = "DISCORD NOTIFICATION BOT \n\n\n"
+    print(notification_text.center(terminal_width).replace(notification_text, f"{RED}{notification_text}{RESET}"))
+    print("Everything's ready, awaiting your haul updates!")
     loop = asyncio.get_event_loop()
     event_handler = FileChangeHandler(loop)
 
     observer = Observer()
     observer.schedule(event_handler, path=os.path.dirname(file_path), recursive=False)
     observer.start()
-
 
     # Keep alive
     while not client.is_closed():
