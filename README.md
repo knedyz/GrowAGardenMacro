@@ -1,4 +1,4 @@
-# Grow a Garden Macro
+# Grow a Garden Shops Macro
 Game: https://www.roblox.com/games/126884695634066/Grow-a-Garden
 
 This is a small project I made because I am very bored. It works for me, idk if it'll work for you too but better to try. <br/>
