@@ -10,7 +10,7 @@ Requires you to have:
 - Latest Python version
 - Discord Bot Token (https://discord.com/developers)
 - **Very Caveman knowledge**
-- 1920x1080 screen
+- 1920x1080 screen resolution
 - Electricity money
 - A SHIT TON OF RECALL WRENCH
 
@@ -47,7 +47,7 @@ Explanation/instructions before you start farming.
 ``` 
 
 ## In-game
-1. put your Recall wrench on the 2nd hotbar.
+1. Put your Recall wrench on the 2nd hotbar.
 2. Angle your camera where it can see both seed vendor and gear vendor. (Theres a scroll feature in the script you can activate for the perfect distance)
 3. Make sure your shift-lock is off
 
